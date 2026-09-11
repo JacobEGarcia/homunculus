@@ -47,7 +47,7 @@ INGS.forEach((g,i)=>{
 });
 function stage(){return STAGES[Math.min(5,Math.floor(ess/40))];}
 function render(){
-  $('stage').textContent=stage();$('ess').textContent=ess;$('stab').textContent=stab+'%';
+  $('stage').textContent=stage();$('ess').textContent=ess;$('stab').textContent=stab;
   $('creature').textContent=EMOJI[Math.min(5,Math.floor(ess/40))];
   $('creature').style.transform='scale('+(1+ess/300)+')';
 }
