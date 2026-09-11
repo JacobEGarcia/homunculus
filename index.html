@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Homunculus</title>
+<style>
+:root{--bg:#12100e;--card:#1c1814;--line:#33291f;--ink:#efe6d8;--dim:#a08d77;--accent:#d4a04f;--bad:#e0705e;--good:#a3c98a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 18px}
+h1{font-size:26px;letter-spacing:7px;color:var(--accent);text-shadow:0 0 22px rgba(212,160,79,.25)}
+.sub{color:var(--dim);font-size:11px;letter-spacing:2.5px;margin-top:8px;text-transform:uppercase}
+#flask{margin:22px 0;width:min(420px,92vw);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center}
+#creature{font-size:64px;min-height:80px;transition:transform .3s}
+#vitals{font-size:12px;color:var(--dim);letter-spacing:1.5px;line-height:2.2;margin-top:10px}
+#vitals b{color:var(--accent)}
+#ings{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(420px,92vw)}
+button{cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:11.5px;padding:11px 6px;letter-spacing:.5px;transition:.15s}
+button:hover:not(:disabled){border-color:var(--accent);transform:translateY(-2px)}
+button:disabled{opacity:.35;cursor:not-allowed}
+#row{display:flex;gap:10px;margin-top:10px}
+#stir{background:var(--accent);border:none;color:#2a1f08;font-weight:700;padding:12px 26px;border-radius:10px;font-size:13px;letter-spacing:2px}
+#msg{margin-top:12px;font-size:12px;color:var(--dim);letter-spacing:1px;min-height:36px;text-align:center;width:min(460px,92vw);line-height:1.7}
+</style>
+</head>
+<body>
+<h1>HOMUNCULUS</h1>
+<div class="sub">an alchemist's flask. grow a little guy.</div>
+<div id="flask">
+  <div id="creature">🧫</div>
+  <div id="vitals">STAGE <b id="stage">MURK</b> &middot; ESSENCE <b id="ess">0</b> &middot; STABILITY <b id="stab">50</b>%</div>
+</div>
+<div id="ings"></div>
+<div id="row"><button id="stir">STIR THE FLASK</button></div>
+<div id="msg">add ingredients, then stir. essence raises the stage; low stability melts the little guy.</div>
+<script>
+const INGS=[['🧂 Salt of the Earth',8,-2],['🌿 Mandrake Root',14,-8],['🍄 Whispering Fungus',18,-12],['🕯️ Saint\'s Candle',10,6],['🪨 Philosopher\'s Gravel',22,-18],['🍯 First Honey',9,3],['⚗️ Quicksilver',26,-25],['🫀 Courage Extract',16,-6]];
+const STAGES=['MURK','BLOB','WIGGLER','CRAWLER','LITTLE GUY','HOMUNCULUS'];
+const EMOJI=['🧫','🫧','🦠','🐛','👶','🧙'];
+let ess=0,stab=50,stirred=0,done=false;
+const $=id=>document.getElementById(id);
+const box=$('ings');
+INGS.forEach((g,i)=>{
+  const b=document.createElement('button');b.textContent=g[0];
+  b.onclick=()=>{if(done)return;ess+=g[1];stab=Math.max(0,stab+g[2]);$('msg').textContent=g[0]+' added. +'+(g[1])+' essence, '+(g[2]<0?'':'+')+g[2]+' stability.';render();};
+  box.appendChild(b);
+});
+function stage(){return STAGES[Math.min(5,Math.floor(ess/40))];}
+function render(){
+  $('stage').textContent=stage();$('ess').textContent=ess;$('stab').textContent=stab+'%';
+  $('creature').textContent=EMOJI[Math.min(5,Math.floor(ess/40))];
+  $('creature').style.transform='scale('+(1+ess/300)+')';
+}
+$('stir').onclick=()=>{
+  if(done)return;
+  stirred++;
+  stab=Math.max(0,stab-8);
+  ess+=5;
+  if(stab<=0){
+    done=true;
+    $('creature').textContent='💀';
+    $('msg').textContent='The flask cracks. The almost-guy sighs once and returns to the periodic table. Stirred '+stirred+' times, reached '+stage()+'.';
+    return;
+  }
+  if(ess>=200){
+    done=true;
+    $('creature').textContent='🧙';
+    $('msg').textContent='IT OPENS ITS EYES. It calls you "father/mother/alchemist" and asks what taxes are. A perfect homunculus in '+stirred+' stirs.';
+    return;
+  }
+  const quips=['it bubbles meaningfully','a small hand presses the glass','the murk swirls with intent','something in there just giggled','the essence thickens'];
+  $('msg').textContent=quips[Math.floor(Math.random()*quips.length)];
+  render();
+};
+render();
+</script>
+</body>
+</html>
